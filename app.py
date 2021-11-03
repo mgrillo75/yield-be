@@ -16,7 +16,8 @@ cors = CORS(app)
 #app.config['CORS_RESOURCES'] = {r"/get*": {"origins": "*"}}
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Mos0451234561477@localhost/mgrillo_defiart_db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Mos0451234561477@162.240.18.56/mgrillo_defiart_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///yield.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
