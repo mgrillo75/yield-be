@@ -5,12 +5,14 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS, cross_origin
+from logging import *
 
 port = int(os.environ.get("PORT", 5000))
 
 app = Flask(__name__)
 
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": '*'}})
+
 
 #app.config['CORS_HEADERS'] = 'application/json'
 #app.config['CORS_RESOURCES'] = {r"/get*": {"origins": "*"}}
@@ -26,8 +28,9 @@ ma = Marshmallow(app)
 class Articles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
-    body = db.Column(db.Text())
+    body = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.datetime.now)
+    deposit = db.Column(db.Integer)
 
     def __init__(self, title, body, deposit):
         self.title = title
@@ -66,6 +69,7 @@ def post_details(id):
 
 
 @app.route('/add', methods=['POST'])
+@cross_origin(origin='*')
 def add_article():
     title = request.json['title']
     body = request.json['body']
