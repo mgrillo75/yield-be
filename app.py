@@ -25,26 +25,30 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
-class Articles(db.Model):
+class NFT(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    body = db.Column(db.Integer)
+    # title = db.Column(db.String(100))
+    nft_reference = db.Column(db.String(100))
+
+    # body = db.Column(db.Integer)
+    nft_yield = db.Column(db.Integer)
+
     date = db.Column(db.DateTime, default=datetime.datetime.now)
     deposit = db.Column(db.Integer)
 
-    def __init__(self, title, body, deposit):
-        self.title = title
-        self.body = body
+    def __init__(self, nft_reference, nft_yield, deposit):
+        self.nft_reference = nft_reference
+        self.nft_yield = nft_yield
         self.deposit = deposit
 
 
-class ArticleSchema(ma.Schema):
+class NFTSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'title', 'body', 'date', 'deposit')
+        fields = ('id', 'nft_reference', 'nft_yield', 'date', 'deposit')
 
 
-article_schema = ArticleSchema()
-articles_schema = ArticleSchema(many=True)
+NFT_schema = NFTSchema()
+NFT_schema = NFTSchema(many=True)
 
 
 @app.route('/', methods=["GET"])
@@ -55,35 +59,35 @@ def index():
 
 @app.route('/get', methods=['GET', 'OPTIONS'])
 @cross_origin()
-def get_articles():
-    all_articles = Articles.query.all()
-    results = articles_schema.jsonify(all_articles)
+def get_nfts():
+    all_nfts = NFT.query.all()
+    results = NFT_schema.jsonify(all_nfts)
     #results.headers.add("Access-Control-Allow-Origin", "*")
     return (results)
 
 
 @app.route('/get/<id>/', methods=['GET'])
 def post_details(id):
-    article = Articles.query.get(id)
-    return article_schema.jsonify(article)
+    nft = NFT.query.get(id)
+    return NFT_schema.jsonify(nft)
 
 
 @app.route('/add', methods=['POST'])
 @cross_origin(origin='*')
 def add_article():
-    title = request.json['title']
-    body = request.json['body']
+    nft_reference = request.json['nft_reference']
+    nft_yield = request.json['nft_yield']
     deposit = request.json['deposit']
 
-    articles = Articles(title, body, deposit)
-    db.session.add(articles)
+    nft_result = NFT(nft_reference, nft_yield, deposit)
+    db.session.add(nft_result)
     db.session.commit()
-    return article_schema.jsonify(articles)
+    return NFT_schema.jsonify("NFT Added")
 
 
 @app.route('/update/<id>/', methods=['PUT'])
 def get_article(id):
-    article = Articles.query.get(id)
+    article = NFT.query.get(id)
 
     title = request.json['title']
     body = request.json['body']
@@ -94,7 +98,7 @@ def get_article(id):
     article.deposit = deposit
 
     db.session.commit()
-    return article_schema.jsonify(article)
+    return NFT_schema.jsonify("NFT Updated")
 
 
 if __name__ == "__main__":
